@@ -140,11 +140,43 @@ trade4digit_province = {
 if __name__ == "__main__":
     import dataset_tools
 
+    store = pd.HDFStore("data.h5", complib="blosc")
+
+    # Country Product Year
     df = dataset_tools.process_dataset(trade4digit_country)
     df = df[("location_id", "product_id", "year")].reset_index()
 
+    df.to_hdf(store, "country_product_year", format="table")
+    attrs = {
+        "sql_table_name": "country_product_year",
+        "location_level": "country",
+        "product_level": "4digit"
+    }
+    store.get_storer("/country_product_year").attrs.atlas_metadata = attrs
+
+    # Department Product Year
     df = dataset_tools.process_dataset(trade4digit_department)
     df = df[("location_id", "product_id", "year")].reset_index()
 
+    df.to_hdf(store, "department_product_year", format="table")
+    attrs = {
+        "sql_table_name": "department_product_year",
+        "location_level": "department",
+        "product_level": "4digit"
+    }
+    store.get_storer("department_product_year").attrs.atlas_metadata = attrs
+
+    # Province Product Year
     df = dataset_tools.process_dataset(trade4digit_province)
     df = df[("location_id", "product_id", "year")].reset_index()
+
+    df.to_hdf(store, "province_product_year", format="table")
+    attrs = {
+        "sql_table_name": "province_product_year",
+        "location_level": "province",
+        "product_level": "4digit"
+    }
+    store.get_storer("province_product_year").attrs.atlas_metadata = attrs
+
+    store.close()
+
