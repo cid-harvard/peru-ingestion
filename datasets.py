@@ -32,6 +32,40 @@ def prefix_path(to_prefix):
     return os.path.join(DATASET_ROOT, to_prefix)
 
 
+def hook_country(df):
+    df["location"] = "000000"
+    return df
+
+trade4digit_country = {
+    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_country.dta")),
+    "hook_pre_merge": hook_country,
+    "field_mapping": {
+        "hs4": "product",
+        "year": "year",
+        "fob": "export_value",
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "country"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+    },
+    "digit_padding": {
+        "location": 6,
+        "product": 4
+    },
+    "facet_fields": ["location", "product", "year"],
+    "facets": {
+        ("location_id", "product_id", "year"): {
+            "export_value": first,
+        }
+    }
+}
+
 def hook_department(df):
     df.location = df.location + "0000"
     return df
@@ -105,9 +139,12 @@ trade4digit_province = {
 
 if __name__ == "__main__":
     import dataset_tools
+
+    df = dataset_tools.process_dataset(trade4digit_country)
+    df = df[("location_id", "product_id", "year")].reset_index()
+
     df = dataset_tools.process_dataset(trade4digit_department)
     df = df[("location_id", "product_id", "year")].reset_index()
 
     df = dataset_tools.process_dataset(trade4digit_province)
     df = df[("location_id", "product_id", "year")].reset_index()
-    print(df.sort_values(by=["location_id", "product_id", "year"]))
