@@ -5,9 +5,6 @@ from linnaeus import classification
 
 product_classification = classification.load("product/HS/Colombia_Prospedia/out/products_colombia_prospedia.csv")
 location_classification = classification.load("location/Peru/INEI/out/locations_peru_inei.csv")
-industry_classification = classification.load("industry/ISIC/Colombia_Prosperia/out/industries_colombia_isic_prosperia.csv")
-occupation_classification = classification.load("occupation/SOC/Colombia/out/occupations_soc_2010.csv")
-
 
 
 def first(x):
