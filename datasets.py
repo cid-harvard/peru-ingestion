@@ -194,5 +194,26 @@ if __name__ == "__main__":
     }
     store.get_storer("province_product_year").attrs.atlas_metadata = attrs
 
+
+    # Product Classification
+    df = product_classification.table.reset_index()
+
+    df.to_hdf(store, "/classifications/product", format="table")
+    attrs = {
+        "sql_table_name": "product",
+    }
+    store.get_storer("/classifications/product").attrs.atlas_metadata = attrs
+
+
+    # Location Classification
+    df = location_classification.table.reset_index()
+
+    df.to_hdf(store, "/classifications/location", format="table")
+    attrs = {
+        "sql_table_name": "location",
+    }
+    store.get_storer("/classifications/location").attrs.atlas_metadata = attrs
+
+
     store.close()
 
