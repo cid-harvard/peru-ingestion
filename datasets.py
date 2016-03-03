@@ -4,7 +4,7 @@ import os.path
 from linnaeus import classification
 
 product_classification = classification.load("product/HS/Colombia_Prospedia/out/products_colombia_prospedia.csv")
-location_classification = classification.load("location/Peru/INEI/out/locations_peru_inei.csv")
+location_classification = classification.load("location/Peru/datlas/out/locations_peru_datlas.csv")
 
 
 def first(x):
@@ -115,7 +115,7 @@ trade4digit_province = {
     "classification_fields": {
         "location": {
             "classification": location_classification,
-            "level": "province"
+            "level": "msa"
         },
         "product": {
             "classification": product_classification,
@@ -186,13 +186,13 @@ if __name__ == "__main__":
     df = dataset_tools.process_dataset(trade4digit_province)
     df = df[("location_id", "product_id", "year")].reset_index()
 
-    df.to_hdf(store, "province_product_year", format="table")
+    df.to_hdf(store, "msa_product_year", format="table")
     attrs = {
-        "sql_table_name": "province_product_year",
-        "location_level": "province",
+        "sql_table_name": "msa_product_year",
+        "location_level": "msa",
         "product_level": "4digit"
     }
-    store.get_storer("province_product_year").attrs.atlas_metadata = attrs
+    store.get_storer("msa_product_year").attrs.atlas_metadata = attrs
 
 
     # Product Classification
