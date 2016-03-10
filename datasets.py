@@ -28,7 +28,7 @@ def hook_country(df):
     return df
 
 trade4digit_country = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_country.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_complexity_country.dta")),
     "hook_pre_merge": hook_country,
     "field_mapping": {
         "hs4": "product",
@@ -62,7 +62,7 @@ def hook_department(df):
     return df
 
 trade4digit_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_department.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_complexity_dpto.dta")),
     "hook_pre_merge": hook_department,
     "field_mapping": {
         "dpto": "location",
@@ -104,7 +104,7 @@ def hook_province(df):
     return df
 
 trade4digit_province = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_province.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_complexity_prov.dta")),
     "hook_pre_merge": hook_province,
     "field_mapping": {
         "prov": "location",
