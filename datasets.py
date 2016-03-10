@@ -134,6 +134,47 @@ trade4digit_province = {
     }
 }
 
+
+def hook_demographics(df):
+    df.gdp_nominal = df.gdp_nominal * 1000.0
+    df.gdp_real = df.gdp_real * 1000.0
+    df.location = df.location + "0000"
+    return df
+
+demographics = {
+    "read_function": lambda: pd.read_stata('/nfs/projects_nobackup/c/cidgrowlab/Atlas/Peru/rawdata/INEI/gdp_pop_department.dta'),
+    "hook_pre_merge": hook_demographics,
+    "field_mapping": {
+        "dpto": "location",
+        "year": "year",
+        "rgdp": "gdp_real",
+        "ngdp": "gdp_nominal",
+        "rgdppc": "gdp_pc_real",
+        "ngdppc": "gdp_pc_nominal",
+        "pop": "population",
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "department"
+        }
+    },
+    "digit_padding": {
+        "location": 2,
+    },
+    "facet_fields": ["location", "year"],
+    "facets": {
+        ("location_id", "year"): {
+            "gdp_real": first,
+            "gdp_nominal": first,
+            "gdp_pc_real": first,
+            "gdp_pc_nominal": first,
+        }
+    }
+}
+
+
+
 if __name__ == "__main__":
     import dataset_tools
 
@@ -213,7 +254,6 @@ if __name__ == "__main__":
         "sql_table_name": "location",
     }
     store.get_storer("/classifications/location").attrs.atlas_metadata = attrs
-
 
     store.close()
 
