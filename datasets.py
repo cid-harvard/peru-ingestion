@@ -23,6 +23,26 @@ def prefix_path(to_prefix):
     return os.path.join(DATASET_ROOT, to_prefix)
 
 
+def convert_classification(df):
+
+    # Copy in fields and change names appropriately
+    new_df = df[["index", "code", "name", "level", "parent_id"]]
+    new_df = new_df.rename({
+        "index": "id",
+        "name": "name_en"
+     })
+
+    # Pull in any optional fields
+    optional_fields = ["name_es", "name_short_en", "name_short_es",
+                       "description_en", "description_es"]
+
+    for field in optional_fields:
+        if field in df:
+            new_df[field] = df[field]
+
+    return new_df
+
+
 def hook_country(df):
     df["location"] = "000000"
     return df
@@ -205,7 +225,15 @@ if __name__ == "__main__":
     store.get_storer("department_product_year").attrs.atlas_metadata = attrs
 
     # Department Year
-    dpy = df[("location_id", "year")].reset_index()
+    trade_dpy = df[("location_id", "year")]
+
+    demographics = dataset_tools.process_dataset(demographics)
+    demographics = demographics[("location_id", "year")]
+
+    dpy = trade_dpy\
+        .join(demographics, how="outer")\
+        .reset_index()
+
     dpy.to_hdf(store, "department_year", format="table")
     attrs = {
         "sql_table_name": "department_year",
