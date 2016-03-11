@@ -76,6 +76,7 @@ trade4digit_country = {
             "export_value": first,
         },
         ("product_id", "year"): {
+            "export_value": sum_group,
             "pci": first,
         }
     }
@@ -116,9 +117,6 @@ trade4digit_department = {
         ("location_id", "year"): {
             "export_value": sum_group,
         },
-        ("product_id", "year"): {
-            "export_value": sum_group,
-        }
     }
 }
 
@@ -205,8 +203,8 @@ if __name__ == "__main__":
     store = pd.HDFStore("data.h5", complib="blosc")
 
     # Country Product Year
-    df = dataset_tools.process_dataset(trade4digit_country)
-    df = df[("location_id", "product_id", "year")].reset_index()
+    cpy = dataset_tools.process_dataset(trade4digit_country)
+    df = cpy[("location_id", "product_id", "year")].reset_index()
 
     df.to_hdf(store, "country_product_year", format="table")
     attrs = {
@@ -215,6 +213,17 @@ if __name__ == "__main__":
         "product_level": "4digit"
     }
     store.get_storer("/country_product_year").attrs.atlas_metadata = attrs
+
+
+    # Product Year
+    py = cpy[("product_id", "year")].reset_index()
+    py.to_hdf(store, "product_year", format="table")
+    attrs = {
+        "sql_table_name": "product_year",
+        "product_level": "4digit",
+    }
+    store.get_storer("product_year").attrs.atlas_metadata = attrs
+
 
     df = dataset_tools.process_dataset(trade4digit_department)
 
@@ -244,15 +253,6 @@ if __name__ == "__main__":
         "location_level": "department",
     }
     store.get_storer("department_year").attrs.atlas_metadata = attrs
-
-    # Product Year
-    dpy = df[("product_id", "year")].reset_index()
-    dpy.to_hdf(store, "product_year", format="table")
-    attrs = {
-        "sql_table_name": "product_year",
-        "product_level": "4digit",
-    }
-    store.get_storer("product_year").attrs.atlas_metadata = attrs
 
 
     # Province Product Year
