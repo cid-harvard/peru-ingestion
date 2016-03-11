@@ -54,6 +54,7 @@ trade4digit_country = {
         "hs4": "product",
         "year": "year",
         "fob": "export_value",
+        "rca": "export_rca",
         "pci": "pci",
     },
     "classification_fields": {
@@ -74,6 +75,7 @@ trade4digit_country = {
     "facets": {
         ("location_id", "product_id", "year"): {
             "export_value": first,
+            "export_rca": first,
         },
         ("product_id", "year"): {
             "export_value": sum_group,
@@ -94,6 +96,7 @@ trade4digit_department = {
         "hs4": "product",
         "year": "year",
         "fob": "export_value",
+        "rca": "export_rca",
     },
     "classification_fields": {
         "location": {
@@ -113,6 +116,7 @@ trade4digit_department = {
     "facets": {
         ("location_id", "product_id", "year"): {
             "export_value": first,
+            "export_rca": first,
         },
         ("location_id", "year"): {
             "export_value": sum_group,
@@ -133,6 +137,7 @@ trade4digit_province = {
         "hs4": "product",
         "year": "year",
         "fob": "export_value",
+        "rca": "export_rca"
     },
     "classification_fields": {
         "location": {
@@ -152,6 +157,7 @@ trade4digit_province = {
     "facets": {
         ("location_id", "product_id", "year"): {
             "export_value": first,
+            "export_rca": first,
         }
     }
 }
