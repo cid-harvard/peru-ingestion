@@ -247,6 +247,8 @@ if __name__ == "__main__":
         .join(demographics, how="outer")\
         .reset_index()
 
+    dpy = dpy.drop("export_value", axis=1)
+
     dpy.to_hdf(store, "department_year", format="table")
     attrs = {
         "sql_table_name": "department_year",
