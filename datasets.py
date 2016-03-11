@@ -54,6 +54,7 @@ trade4digit_country = {
         "hs4": "product",
         "year": "year",
         "fob": "export_value",
+        "pci": "pci",
     },
     "classification_fields": {
         "location": {
@@ -73,6 +74,9 @@ trade4digit_country = {
     "facets": {
         ("location_id", "product_id", "year"): {
             "export_value": first,
+        },
+        ("product_id", "year"): {
+            "pci": first,
         }
     }
 }
