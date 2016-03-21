@@ -197,6 +197,7 @@ demographics = {
             "gdp_nominal": first,
             "gdp_pc_real": first,
             "gdp_pc_nominal": first,
+            "population": first,
         }
     }
 }
