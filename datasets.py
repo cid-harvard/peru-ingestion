@@ -57,6 +57,9 @@ trade4digit_country = {
         "rca": "export_rca",
         "pci": "pci",
         "eci": "eci",
+        "coi": "coi",
+        "cog": "cog",
+        "density": "density",
     },
     "classification_fields": {
         "location": {
@@ -77,6 +80,9 @@ trade4digit_country = {
         ("location_id", "product_id", "year"): {
             "export_value": first,
             "export_rca": first,
+            "coi": first,
+            "cog": first,
+            "density": first,
         },
         ("product_id", "year"): {
             "export_value": sum_group,
@@ -103,6 +109,9 @@ trade4digit_department = {
         "fob": "export_value",
         "rca": "export_rca",
         "eci": "eci",
+        "coi": "coi",
+        "cog": "cog",
+        "density": "density",
     },
     "classification_fields": {
         "location": {
@@ -123,6 +132,9 @@ trade4digit_department = {
         ("location_id", "product_id", "year"): {
             "export_value": first,
             "export_rca": first,
+            "coi": first,
+            "cog": first,
+            "density": first,
         },
         ("location_id", "year"): {
             "eci": first,
@@ -145,7 +157,10 @@ trade4digit_province = {
         "year": "year",
         "fob": "export_value",
         "rca": "export_rca",
-        "eci": "eci"
+        "eci": "eci",
+        "coi": "coi",
+        "cog": "cog",
+        "density": "density",
     },
     "classification_fields": {
         "location": {
@@ -166,6 +181,9 @@ trade4digit_province = {
         ("location_id", "product_id", "year"): {
             "export_value": first,
             "export_rca": first,
+            "coi": first,
+            "cog": first,
+            "density": first,
         },
         ("location_id", "year"): {
             "eci": first,
