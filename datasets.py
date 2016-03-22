@@ -56,6 +56,7 @@ trade4digit_country = {
         "fob": "export_value",
         "rca": "export_rca",
         "pci": "pci",
+        "eci": "eci",
     },
     "classification_fields": {
         "location": {
@@ -80,7 +81,11 @@ trade4digit_country = {
         ("product_id", "year"): {
             "export_value": sum_group,
             "pci": first,
-        }
+        },
+        ("location_id", "year"): {
+            "export_value": sum_group,
+            "eci": first,
+        },
     }
 }
 
@@ -97,6 +102,7 @@ trade4digit_department = {
         "year": "year",
         "fob": "export_value",
         "rca": "export_rca",
+        "eci": "eci",
     },
     "classification_fields": {
         "location": {
@@ -119,6 +125,7 @@ trade4digit_department = {
             "export_rca": first,
         },
         ("location_id", "year"): {
+            "eci": first,
             "export_value": sum_group,
         },
     }
@@ -137,7 +144,8 @@ trade4digit_province = {
         "hs4": "product",
         "year": "year",
         "fob": "export_value",
-        "rca": "export_rca"
+        "rca": "export_rca",
+        "eci": "eci"
     },
     "classification_fields": {
         "location": {
@@ -158,7 +166,10 @@ trade4digit_province = {
         ("location_id", "product_id", "year"): {
             "export_value": first,
             "export_rca": first,
-        }
+        },
+        ("location_id", "year"): {
+            "eci": first,
+        },
     }
 }
 
@@ -264,17 +275,29 @@ if __name__ == "__main__":
     store.get_storer("department_year").attrs.atlas_metadata = attrs
 
 
-    # Province Product Year
+    # Province
     df = dataset_tools.process_dataset(trade4digit_province)
-    df = df[("location_id", "product_id", "year")].reset_index()
 
-    df.to_hdf(store, "msa_product_year", format="table")
+    # Province Product Year
+    ppy = df[("location_id", "product_id", "year")].reset_index()
+
+    ppy.to_hdf(store, "msa_product_year", format="table")
     attrs = {
         "sql_table_name": "msa_product_year",
         "location_level": "msa",
         "product_level": "4digit"
     }
     store.get_storer("msa_product_year").attrs.atlas_metadata = attrs
+
+    # Province Year
+    py = df[("location_id", "year")].reset_index()
+
+    py.to_hdf(store, "msa_year", format="table")
+    attrs = {
+        "sql_table_name": "msa_year",
+        "location_level": "msa",
+    }
+    store.get_storer("msa_year").attrs.atlas_metadata = attrs
 
 
     # Product Classification
