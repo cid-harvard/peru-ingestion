@@ -5,6 +5,7 @@ from linnaeus import classification
 
 product_classification = classification.load("product/HS/Colombia_Prospedia/out/products_colombia_prospedia.csv")
 location_classification = classification.load("location/Peru/datlas/out/locations_peru_datlas.csv")
+country_classification = classification.load("location/International/ISO-CID/out/locations_international_iso_cid.csv")
 
 
 def first(x):
@@ -192,6 +193,50 @@ trade4digit_province = {
 }
 
 
+def hook_rcpy_country(df):
+    df["location"] = "000000"
+    return df
+
+trade4digit_rcpy_country = {
+    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_rcpy_country.dta")),
+    "hook_pre_merge": hook_rcpy_country,
+    "field_mapping": {
+        "country": "location",
+        "cpais": "country",
+        "hs4": "product",
+        "year": "year",
+        "fob": "export_value",
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "country"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+        "country": {
+            "classification": country_classification,
+            "level": "country"
+        },
+    },
+    "digit_padding": {
+        "location": 6,
+        "product": 4,
+    },
+    "facet_fields": ["location", "country", "product", "year"],
+    "facets": {
+        ("country_id", "location_id", "year"): {
+            "export_value": sum_group,
+        },
+        ("product_id", "country_id", "year"): {
+            "export_value": sum_group,
+        },
+    }
+}
+
+
 def hook_demographics(df):
     df.gdp_nominal = df.gdp_nominal * 1000.0
     df.gdp_real = df.gdp_real * 1000.0
@@ -316,6 +361,28 @@ if __name__ == "__main__":
         "location_level": "msa",
     }
     store.get_storer("msa_year").attrs.atlas_metadata = attrs
+
+
+    # RCPY Country
+    df = dataset_tools.process_dataset(trade4digit_rcpy_country)
+
+    ret = df[("country_id", "location_id", "year")].reset_index()
+    ret.to_hdf(store, "country_country_year", format="table")
+    attrs = {
+        "sql_table_name": "country_country_year",
+        "location_level": "country",
+        "country_level": "country",
+    }
+    store.get_storer("country_country_year").attrs.atlas_metadata = attrs
+
+    ret = df[("product_id", "country_id", "year")].reset_index()
+    ret.to_hdf(store, "partner_product_year", format="table")
+    attrs = {
+        "sql_table_name": "partner_product_year",
+        "country_level": "country",
+        "product_level": "4digit"
+    }
+    store.get_storer("partner_product_year").attrs.atlas_metadata = attrs
 
 
     # Product Classification
