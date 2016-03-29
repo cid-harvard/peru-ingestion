@@ -404,8 +404,6 @@ if __name__ == "__main__":
     }
     store.get_storer("/classifications/location").attrs.atlas_metadata = attrs
 
-    store.close()
-
     # Country Classification
     df = country_classification.table.reset_index()
 
