@@ -406,3 +406,14 @@ if __name__ == "__main__":
 
     store.close()
 
+    # Country Classification
+    df = country_classification.table.reset_index()
+
+    df.to_hdf(store, "/classifications/country", format="table")
+    attrs = {
+        "sql_table_name": "country",
+    }
+    store.get_storer("/classifications/country").attrs.atlas_metadata = attrs
+
+    store.close()
+
