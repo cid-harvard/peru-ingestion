@@ -281,6 +281,47 @@ trade4digit_rcpy_department = {
 }
 
 
+def hook_rcpy_province(df):
+    df.location = df.location + "00"
+    return df
+
+trade4digit_rcpy_province = {
+    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_rcpy_prov.dta")),
+    "hook_pre_merge": hook_rcpy_province,
+    "field_mapping": {
+        "prov": "location",
+        "cpais": "country",
+        "hs4": "product",
+        "year": "year",
+        "fob": "export_value",
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "msa"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+        "country": {
+            "classification": country_classification,
+            "level": "country"
+        },
+    },
+    "digit_padding": {
+        "location": 6,
+        "product": 4,
+    },
+    "facet_fields": ["location", "country", "product", "year"],
+    "facets": {
+        ("country_id", "location_id", "year"): {
+            "export_value": sum_group,
+        },
+    }
+}
+
+
 def hook_demographics(df):
     df.gdp_nominal = df.gdp_nominal * 1000.0
     df.gdp_real = df.gdp_real * 1000.0
@@ -451,6 +492,17 @@ if __name__ == "__main__":
     }
     store.get_storer("country_department_product_year").attrs.atlas_metadata = attrs
 
+    # RCPY Province
+    df = dataset_tools.process_dataset(trade4digit_rcpy_province)
+
+    ret = df[("country_id", "location_id", "year")].reset_index()
+    ret.to_hdf(store, "country_msa_year", format="table")
+    attrs = {
+        "sql_table_name": "country_msa_year",
+        "location_level": "msa",
+        "country_level": "country",
+    }
+    store.get_storer("country_msa_year").attrs.atlas_metadata = attrs
 
     # Product Classification
     df = product_classification.table.reset_index()
