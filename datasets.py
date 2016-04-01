@@ -3,7 +3,7 @@ import os.path
 
 from linnaeus import classification
 
-product_classification = classification.load("product/HS/Colombia_Prospedia/out/products_colombia_prospedia.csv")
+product_classification = classification.load("product/HS/Peru_Datlas/out/products_peru_datlas.csv")
 location_classification = classification.load("location/Peru/datlas/out/locations_peru_datlas.csv")
 country_classification = classification.load("location/International/ISO-CID/out/locations_international_iso_cid.csv")
 
