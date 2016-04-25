@@ -318,6 +318,9 @@ trade4digit_rcpy_province = {
         ("country_id", "location_id", "year"): {
             "export_value": sum_group,
         },
+        ("country_id", "location_id", "product_id", "year"): {
+            "export_value": first,
+        },
     }
 }
 
@@ -503,6 +506,17 @@ if __name__ == "__main__":
         "country_level": "country",
     }
     store.get_storer("country_msa_year").attrs.atlas_metadata = attrs
+
+    ret = df[("country_id", "location_id", "product_id", "year")].reset_index()
+    ret.to_hdf(store, "country_msa_product_year", format="table")
+    attrs = {
+        "sql_table_name": "country_msa_product_year",
+        "country_level": "country",
+        "location_level": "msa",
+        "product_level": "4digit"
+    }
+    store.get_storer("country_msa_product_year").attrs.atlas_metadata = attrs
+
 
     # Product Classification
     df = product_classification.table.reset_index()
