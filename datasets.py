@@ -233,6 +233,9 @@ trade4digit_rcpy_country = {
         ("product_id", "country_id", "year"): {
             "export_value": sum_group,
         },
+        ("country_id", "location_id", "product_id", "year"): {
+            "export_value": first,
+        },
     }
 }
 
@@ -472,6 +475,16 @@ if __name__ == "__main__":
     }
     store.get_storer("partner_product_year").attrs.atlas_metadata = attrs
 
+    ret = df[("country_id", "location_id", "product_id", "year")].reset_index()
+    ret.to_hdf(store, "country_country_product_year", format="table")
+    attrs = {
+        # Removed because we don't need to ingest this for the API
+        #"sql_table_name": "country_country_product_year",
+        "country_level": "country",
+        "location_level": "country",
+        "product_level": "4digit"
+    }
+    store.get_storer("country_country_product_year").attrs.atlas_metadata = attrs
 
     # RCPY Department
     df = dataset_tools.process_dataset(trade4digit_rcpy_department)
