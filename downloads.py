@@ -34,6 +34,7 @@ location_year_columns = ['location_id', 'year', 'eci']
 dy = store['department_year'][location_year_columns]
 my = store['msa_year'][location_year_columns]
 
+pd.set_option("io.excel.xlsx.writer", "xlsxwriter")
 
 cpy = store['country_product_year']\
     .merge(py, on=['product_id', 'year'])
