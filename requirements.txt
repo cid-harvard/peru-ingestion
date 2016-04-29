@@ -5,7 +5,7 @@ blosc
 
 # Internal packages
 git+https://github.com/cid-harvard/atlas_core.git@v0.2.7#egg=atlas_core
-git+https://github.com/cid-harvard/classifications.git@v0.0.64#egg=linnaeus
+git+https://github.com/cid-harvard/classifications.git@v0.0.65#egg=linnaeus
 git+https://github.com/cid-harvard/reckoner.git@850e1322226107262a9c6a9af24b9440f3b5b35b#egg=reckoner
 
 # External packages
