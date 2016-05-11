@@ -81,7 +81,6 @@ trade4digit_country = {
         ("location_id", "product_id", "year"): {
             "export_value": first,
             "export_rca": first,
-            "coi": first,
             "cog": first,
             "density": first,
         },
@@ -92,6 +91,7 @@ trade4digit_country = {
         ("location_id", "year"): {
             "export_value": sum_group,
             "eci": first,
+            "coi": first,
         },
     }
 }
@@ -133,12 +133,12 @@ trade4digit_department = {
         ("location_id", "product_id", "year"): {
             "export_value": first,
             "export_rca": first,
-            "coi": first,
             "cog": first,
             "density": first,
         },
         ("location_id", "year"): {
             "eci": first,
+            "coi": first,
             "export_value": sum_group,
         },
     }
@@ -182,12 +182,12 @@ trade4digit_province = {
         ("location_id", "product_id", "year"): {
             "export_value": first,
             "export_rca": first,
-            "coi": first,
             "cog": first,
             "density": first,
         },
         ("location_id", "year"): {
             "eci": first,
+            "coi": first,
         },
     }
 }
