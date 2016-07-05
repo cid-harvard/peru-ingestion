@@ -30,13 +30,15 @@ def merge_classifications(df):
 
 py = store['product_year'][['product_id', 'year', 'pci']]
 
-location_year_columns = ['location_id', 'year', 'eci']
+location_year_columns = ['location_id', 'year', 'eci', 'coi']
+cy = store['country_year'][location_year_columns]
 dy = store['department_year'][location_year_columns]
 my = store['msa_year'][location_year_columns]
 
 pd.set_option("io.excel.xlsx.writer", "xlsxwriter")
 
 cpy = store['country_product_year']\
+    .merge(cy, on=['location_id', 'year'])\
     .merge(py, on=['product_id', 'year'])
 cpy = merge_classifications(cpy)
 cpy.to_excel("downloads/products_country.xlsx", index=False)
@@ -56,6 +58,7 @@ ppy.to_excel("downloads/products_province.xlsx", index=False)
 
 
 ccpy = store['country_country_product_year']\
+    .merge(cy, on=['location_id', 'year'])\
     .merge(py, on=['product_id', 'year'])
 ccpy = merge_classifications(ccpy)
 ccpy.to_excel("downloads/products_rcpy_country.xlsx", index=False)
@@ -76,7 +79,7 @@ cmpy.to_excel("downloads/products_rcpy_province.xlsx", index=False)
 
 
 demographics_department = store['department_year']\
-    [["location_id", "year", "gdp_real", "gdp_pc_real", "population"]]\
+    [["location_id", "year", "gdp_real", "gdp_pc_real", "gdp_nominal", "gdp_pc_nominal", "population"]]\
     .merge(dy, on=['location_id', 'year'])
 demographics_department = merge_classifications(demographics_department)
 demographics_department.to_excel("downloads/demographics_department.xlsx", index=False)

@@ -387,6 +387,16 @@ if __name__ == "__main__":
     store.get_storer("/country_product_year").attrs.atlas_metadata = attrs
 
 
+    # Country Year
+    cy = cpy[("location_id", "year")].reset_index()
+
+    cy.to_hdf(store, "country_year", format="table")
+    attrs = {
+        "location_level": "country",
+    }
+    store.get_storer("country_year").attrs.atlas_metadata = attrs
+
+
     # Product Year
     py = cpy[("product_id", "year")].reset_index()
     py.to_hdf(store, "product_year", format="table")
