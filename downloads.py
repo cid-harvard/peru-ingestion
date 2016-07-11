@@ -40,40 +40,47 @@ pd.set_option("io.excel.xlsx.writer", "xlsxwriter")
 cpy = store['country_product_year']\
     .merge(cy, on=['location_id', 'year'])\
     .merge(py, on=['product_id', 'year'])
-cpy = merge_classifications(cpy)
-cpy.to_excel("downloads/products_country.xlsx", index=False)
+merge_classifications(cpy)\
+    .to_excel("downloads/products_country.xlsx", index=False)
 
 
 dpy = store['department_product_year']\
     .merge(dy, on=['location_id', 'year'])\
     .merge(py, on=['product_id', 'year'])
-dpy = merge_classifications(dpy)
-dpy.to_excel("downloads/products_department.xlsx", index=False)
+merge_classifications(dpy)\
+    .to_excel("downloads/products_department.xlsx", index=False)
 
 
 ppy = store['msa_product_year']\
+    .merge(my, on=['location_id', 'year'])\
     .merge(py, on=['product_id', 'year'])
-ppy = merge_classifications(ppy)
-ppy.to_excel("downloads/products_province.xlsx", index=False)
+merge_classifications(ppy)\
+    .to_excel("downloads/products_province.xlsx", index=False)
 
 
 ccpy = store['country_country_product_year']\
     .merge(cy, on=['location_id', 'year'])\
-    .merge(py, on=['product_id', 'year'])
+    .merge(py, on=['product_id', 'year'])\
+    .merge(cpy[["location_id", "product_id", "year", "cog"]],
+           on=['location_id', 'product_id', 'year'])
 ccpy = merge_classifications(ccpy)
 ccpy.to_excel("downloads/products_rcpy_country.xlsx", index=False)
 
 
 cdpy = store['country_department_product_year']\
     .merge(dy, on=['location_id', 'year'])\
-    .merge(py, on=['product_id', 'year'])
+    .merge(py, on=['product_id', 'year'])\
+    .merge(dpy[["location_id", "product_id", "year", "cog"]],
+           on=['location_id', 'product_id', 'year'])
 cdpy = merge_classifications(cdpy)
 cdpy.to_excel("downloads/products_rcpy_department.xlsx", index=False)
 
 
 cmpy = store['country_msa_product_year']\
     .merge(my, on=['location_id', 'year'])\
-    .merge(py, on=['product_id', 'year'])
+    .merge(py, on=['product_id', 'year'])\
+    .merge(ppy[["location_id", "product_id", "year", "cog"]],
+           on=['location_id', 'product_id', 'year'])
 cmpy = merge_classifications(cmpy)
 cmpy.to_excel("downloads/products_rcpy_province.xlsx", index=False)
 
