@@ -4,8 +4,7 @@ import os.path
 from linnaeus import classification
 
 product_classification = classification.load("product/HS/Peru_Datlas/out/products_peru_datlas.csv")
-location_classification = classification.load("location/Peru/datlas/out/locations_peru_datlas.csv")
-country_classification = classification.load("location/International/ISO-CID/out/locations_international_iso_cid.csv")
+location_classification = classification.load("location/International/ISO-CID/out/locations_international_iso_cid.csv")
 
 
 def first(x):
@@ -18,7 +17,7 @@ def sum_group(x):
     return x.sum()
 
 
-DATASET_ROOT = "/nfs/home/M/makmanalp/shared_space/cidgrowlab/Atlas/Peru/results/"
+DATASET_ROOT = "/Users/makmana/cepii/new/"
 
 def prefix_path(to_prefix):
     return os.path.join(DATASET_ROOT, to_prefix)
@@ -44,23 +43,21 @@ def convert_classification(df):
     return new_df
 
 
-def hook_country(df):
-    df["location"] = "000000"
-    return df
-
-trade4digit_country = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_complexity_country.dta")),
-    "hook_pre_merge": hook_country,
+hs92_4digit_country = {
+    "read_function": lambda: pd.read_stata(prefix_path("./H0_cpy_all.dta")),
     "field_mapping": {
-        "hs4": "product",
+        "exporter": "location",
+        "commoditycode": "product",
         "year": "year",
-        "fob": "export_value",
+        "export_value": "export_value",
+        "import_value": "import_value",
         "rca": "export_rca",
-        "pci": "pci",
+        "distance": "distance",
+        #"diversity": "diversity",
         "eci": "eci",
-        "coi": "coi",
-        "cog": "cog",
-        "density": "density",
+        "pci": "pci",
+        "oppgain": "cog",
+        "oppval": "coi",
     },
     "classification_fields": {
         "location": {
@@ -80,293 +77,25 @@ trade4digit_country = {
     "facets": {
         ("location_id", "product_id", "year"): {
             "export_value": first,
+            "import_value": first,
             "export_rca": first,
             "cog": first,
-            "density": first,
+            "distance": first,
+        },
+        ("location_id", "year"): {
+            "coi": first,
+            "eci": first,
+            #"diversity": first,
+            "export_value": sum_group,
+            "import_value": sum_group,
         },
         ("product_id", "year"): {
-            "export_value": sum_group,
             "pci": first,
-        },
-        ("location_id", "year"): {
             "export_value": sum_group,
-            "eci": first,
-            "coi": first,
+            "import_value": sum_group,
         },
     }
 }
-
-def hook_department(df):
-    df.location = df.location + "0000"
-    return df
-
-trade4digit_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_complexity_dpto.dta")),
-    "hook_pre_merge": hook_department,
-    "field_mapping": {
-        "dpto": "location",
-        "hs4": "product",
-        "year": "year",
-        "fob": "export_value",
-        "rca": "export_rca",
-        "eci": "eci",
-        "coi": "coi",
-        "cog": "cog",
-        "density": "density",
-    },
-    "classification_fields": {
-        "location": {
-            "classification": location_classification,
-            "level": "department"
-        },
-        "product": {
-            "classification": product_classification,
-            "level": "4digit"
-        },
-    },
-    "digit_padding": {
-        "location": 6,
-        "product": 4
-    },
-    "facet_fields": ["location", "product", "year"],
-    "facets": {
-        ("location_id", "product_id", "year"): {
-            "export_value": first,
-            "export_rca": first,
-            "cog": first,
-            "density": first,
-        },
-        ("location_id", "year"): {
-            "eci": first,
-            "coi": first,
-            "export_value": sum_group,
-        },
-    }
-}
-
-
-def hook_province(df):
-    df.location = df.location + "00"
-    return df
-
-trade4digit_province = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_complexity_prov.dta")),
-    "hook_pre_merge": hook_province,
-    "field_mapping": {
-        "prov": "location",
-        "hs4": "product",
-        "year": "year",
-        "fob": "export_value",
-        "rca": "export_rca",
-        "eci": "eci",
-        "coi": "coi",
-        "cog": "cog",
-        "density": "density",
-    },
-    "classification_fields": {
-        "location": {
-            "classification": location_classification,
-            "level": "msa"
-        },
-        "product": {
-            "classification": product_classification,
-            "level": "4digit"
-        },
-    },
-    "digit_padding": {
-        "location": 6,
-        "product": 4
-    },
-    "facet_fields": ["location", "product", "year"],
-    "facets": {
-        ("location_id", "product_id", "year"): {
-            "export_value": first,
-            "export_rca": first,
-            "cog": first,
-            "density": first,
-        },
-        ("location_id", "year"): {
-            "eci": first,
-            "coi": first,
-        },
-    }
-}
-
-
-def hook_rcpy_country(df):
-    df["location"] = "000000"
-    return df
-
-trade4digit_rcpy_country = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_rcpy_country.dta")),
-    "hook_pre_merge": hook_rcpy_country,
-    "field_mapping": {
-        "country": "location",
-        "cpais": "country",
-        "hs4": "product",
-        "year": "year",
-        "fob": "export_value",
-    },
-    "classification_fields": {
-        "location": {
-            "classification": location_classification,
-            "level": "country"
-        },
-        "product": {
-            "classification": product_classification,
-            "level": "4digit"
-        },
-        "country": {
-            "classification": country_classification,
-            "level": "country"
-        },
-    },
-    "digit_padding": {
-        "location": 6,
-        "product": 4,
-    },
-    "facet_fields": ["location", "country", "product", "year"],
-    "facets": {
-        ("country_id", "location_id", "year"): {
-            "export_value": sum_group,
-        },
-        ("product_id", "country_id", "year"): {
-            "export_value": sum_group,
-        },
-        ("country_id", "location_id", "product_id", "year"): {
-            "export_value": first,
-        },
-    }
-}
-
-
-def hook_rcpy_department(df):
-    df.location = df.location + "0000"
-    return df
-
-trade4digit_rcpy_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_rcpy_dpto.dta")),
-    "hook_pre_merge": hook_rcpy_department,
-    "field_mapping": {
-        "dpto": "location",
-        "cpais": "country",
-        "hs4": "product",
-        "year": "year",
-        "fob": "export_value",
-    },
-    "classification_fields": {
-        "location": {
-            "classification": location_classification,
-            "level": "department"
-        },
-        "product": {
-            "classification": product_classification,
-            "level": "4digit"
-        },
-        "country": {
-            "classification": country_classification,
-            "level": "country"
-        },
-    },
-    "digit_padding": {
-        "location": 6,
-        "product": 4,
-    },
-    "facet_fields": ["location", "country", "product", "year"],
-    "facets": {
-        ("country_id", "location_id", "year"): {
-            "export_value": sum_group,
-        },
-        ("country_id", "location_id", "product_id", "year"): {
-            "export_value": first,
-        },
-    }
-}
-
-
-def hook_rcpy_province(df):
-    df.location = df.location + "00"
-    return df
-
-trade4digit_rcpy_province = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade_4digit_rcpy_prov.dta")),
-    "hook_pre_merge": hook_rcpy_province,
-    "field_mapping": {
-        "prov": "location",
-        "cpais": "country",
-        "hs4": "product",
-        "year": "year",
-        "fob": "export_value",
-    },
-    "classification_fields": {
-        "location": {
-            "classification": location_classification,
-            "level": "msa"
-        },
-        "product": {
-            "classification": product_classification,
-            "level": "4digit"
-        },
-        "country": {
-            "classification": country_classification,
-            "level": "country"
-        },
-    },
-    "digit_padding": {
-        "location": 6,
-        "product": 4,
-    },
-    "facet_fields": ["location", "country", "product", "year"],
-    "facets": {
-        ("country_id", "location_id", "year"): {
-            "export_value": sum_group,
-        },
-        ("country_id", "location_id", "product_id", "year"): {
-            "export_value": first,
-        },
-    }
-}
-
-
-def hook_demographics(df):
-    df.gdp_nominal = df.gdp_nominal * 1000.0
-    df.gdp_real = df.gdp_real * 1000.0
-    df.location = df.location + "0000"
-    return df
-
-demographics = {
-    "read_function": lambda: pd.read_stata('/nfs/projects_nobackup/c/cidgrowlab/Atlas/Peru/rawdata/INEI/gdp_pop_department.dta'),
-    "hook_pre_merge": hook_demographics,
-    "field_mapping": {
-        "dpto": "location",
-        "year": "year",
-        "rgdp": "gdp_real",
-        "ngdp": "gdp_nominal",
-        "rgdppc": "gdp_pc_real",
-        "ngdppc": "gdp_pc_nominal",
-        "pop": "population",
-    },
-    "classification_fields": {
-        "location": {
-            "classification": location_classification,
-            "level": "department"
-        }
-    },
-    "digit_padding": {
-        "location": 2,
-    },
-    "facet_fields": ["location", "year"],
-    "facets": {
-        ("location_id", "year"): {
-            "gdp_real": first,
-            "gdp_nominal": first,
-            "gdp_pc_real": first,
-            "gdp_pc_nominal": first,
-            "population": first,
-        }
-    }
-}
-
 
 
 if __name__ == "__main__":
@@ -374,8 +103,27 @@ if __name__ == "__main__":
 
     store = pd.HDFStore("data.h5", complib="blosc")
 
+    # Product Classification
+    df = product_classification.table.reset_index()
+
+    df.to_hdf(store, "/classifications/product", format="table")
+    attrs = {
+        "sql_table_name": "product",
+    }
+    store.get_storer("/classifications/product").attrs.atlas_metadata = attrs
+
+
+    # Country Classification
+    df = location_classification.table.reset_index()
+
+    df.to_hdf(store, "/classifications/location", format="table")
+    attrs = {
+        "sql_table_name": "location",
+    }
+    store.get_storer("/classifications/location").attrs.atlas_metadata = attrs
+
     # Country Product Year
-    cpy = dataset_tools.process_dataset(trade4digit_country)
+    cpy = dataset_tools.process_dataset(hs92_4digit_country)
     df = cpy[("location_id", "product_id", "year")].reset_index()
 
     df.to_hdf(store, "country_product_year", format="table")
@@ -392,6 +140,7 @@ if __name__ == "__main__":
 
     cy.to_hdf(store, "country_year", format="table")
     attrs = {
+        "sql_table_name": "country_year",
         "location_level": "country",
     }
     store.get_storer("country_year").attrs.atlas_metadata = attrs
@@ -405,169 +154,6 @@ if __name__ == "__main__":
         "product_level": "4digit",
     }
     store.get_storer("product_year").attrs.atlas_metadata = attrs
-
-
-    df = dataset_tools.process_dataset(trade4digit_department)
-
-    # Department Product Year
-    dpy = df[("location_id", "product_id", "year")].reset_index()
-    dpy.to_hdf(store, "department_product_year", format="table")
-    attrs = {
-        "sql_table_name": "department_product_year",
-        "location_level": "department",
-        "product_level": "4digit"
-    }
-    store.get_storer("department_product_year").attrs.atlas_metadata = attrs
-
-    # Department Year
-    trade_dpy = df[("location_id", "year")]
-
-    demographics = dataset_tools.process_dataset(demographics)
-    demographics = demographics[("location_id", "year")]
-
-    dpy = trade_dpy\
-        .join(demographics, how="outer")\
-        .reset_index()
-
-    dpy = dpy.drop("export_value", axis=1)
-
-    dpy.to_hdf(store, "department_year", format="table")
-    attrs = {
-        "sql_table_name": "department_year",
-        "location_level": "department",
-    }
-    store.get_storer("department_year").attrs.atlas_metadata = attrs
-
-
-    # Province
-    df = dataset_tools.process_dataset(trade4digit_province)
-
-    # Province Product Year
-    ppy = df[("location_id", "product_id", "year")].reset_index()
-
-    ppy.to_hdf(store, "msa_product_year", format="table")
-    attrs = {
-        "sql_table_name": "msa_product_year",
-        "location_level": "msa",
-        "product_level": "4digit"
-    }
-    store.get_storer("msa_product_year").attrs.atlas_metadata = attrs
-
-    # Province Year
-    py = df[("location_id", "year")].reset_index()
-
-    py.to_hdf(store, "msa_year", format="table")
-    attrs = {
-        "sql_table_name": "msa_year",
-        "location_level": "msa",
-    }
-    store.get_storer("msa_year").attrs.atlas_metadata = attrs
-
-
-    # RCPY Country
-    df = dataset_tools.process_dataset(trade4digit_rcpy_country)
-
-    ret = df[("country_id", "location_id", "year")].reset_index()
-    ret.to_hdf(store, "country_country_year", format="table")
-    attrs = {
-        "sql_table_name": "country_country_year",
-        "location_level": "country",
-        "country_level": "country",
-    }
-    store.get_storer("country_country_year").attrs.atlas_metadata = attrs
-
-    ret = df[("product_id", "country_id", "year")].reset_index()
-    ret.to_hdf(store, "partner_product_year", format="table")
-    attrs = {
-        "sql_table_name": "partner_product_year",
-        "country_level": "country",
-        "product_level": "4digit"
-    }
-    store.get_storer("partner_product_year").attrs.atlas_metadata = attrs
-
-    ret = df[("country_id", "location_id", "product_id", "year")].reset_index()
-    ret.to_hdf(store, "country_country_product_year", format="table")
-    attrs = {
-        # Removed because we don't need to ingest this for the API
-        #"sql_table_name": "country_country_product_year",
-        "country_level": "country",
-        "location_level": "country",
-        "product_level": "4digit"
-    }
-    store.get_storer("country_country_product_year").attrs.atlas_metadata = attrs
-
-    # RCPY Department
-    df = dataset_tools.process_dataset(trade4digit_rcpy_department)
-
-    ret = df[("country_id", "location_id", "year")].reset_index()
-    ret.to_hdf(store, "country_department_year", format="table")
-    attrs = {
-        "sql_table_name": "country_department_year",
-        "location_level": "department",
-        "country_level": "country",
-    }
-    store.get_storer("country_department_year").attrs.atlas_metadata = attrs
-
-    ret = df[("country_id", "location_id", "product_id", "year")].reset_index()
-    ret.to_hdf(store, "country_department_product_year", format="table")
-    attrs = {
-        "sql_table_name": "country_department_product_year",
-        "country_level": "country",
-        "location_level": "department",
-        "product_level": "4digit"
-    }
-    store.get_storer("country_department_product_year").attrs.atlas_metadata = attrs
-
-    # RCPY Province
-    df = dataset_tools.process_dataset(trade4digit_rcpy_province)
-
-    ret = df[("country_id", "location_id", "year")].reset_index()
-    ret.to_hdf(store, "country_msa_year", format="table")
-    attrs = {
-        "sql_table_name": "country_msa_year",
-        "location_level": "msa",
-        "country_level": "country",
-    }
-    store.get_storer("country_msa_year").attrs.atlas_metadata = attrs
-
-    ret = df[("country_id", "location_id", "product_id", "year")].reset_index()
-    ret.to_hdf(store, "country_msa_product_year", format="table")
-    attrs = {
-        "sql_table_name": "country_msa_product_year",
-        "country_level": "country",
-        "location_level": "msa",
-        "product_level": "4digit"
-    }
-    store.get_storer("country_msa_product_year").attrs.atlas_metadata = attrs
-
-
-    # Product Classification
-    df = product_classification.table.reset_index()
-
-    df.to_hdf(store, "/classifications/product", format="table")
-    attrs = {
-        "sql_table_name": "product",
-    }
-    store.get_storer("/classifications/product").attrs.atlas_metadata = attrs
-
-
-    # Location Classification
-    df = location_classification.table.reset_index()
-
-    df.to_hdf(store, "/classifications/location", format="table")
-    attrs = {
-        "sql_table_name": "location",
-    }
-    store.get_storer("/classifications/location").attrs.atlas_metadata = attrs
-
-    # Country Classification
-    df = country_classification.table.reset_index()
-
-    df.to_hdf(store, "/classifications/country", format="table")
-    attrs = {
-        "sql_table_name": "country",
-    }
-    store.get_storer("/classifications/country").attrs.atlas_metadata = attrs
 
     store.close()
 
