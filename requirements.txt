@@ -11,6 +11,7 @@ git+https://github.com/cid-harvard/reckoner.git@850e1322226107262a9c6a9af24b9440
 # External packages
 numpy
 pandas
+clint
 
 # File formats
 tables
