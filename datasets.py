@@ -3,8 +3,8 @@ import os.path
 
 from linnaeus import classification
 
-product_classification = classification.load("product/HS/Peru_Datlas/out/products_peru_datlas.csv")
-location_classification = classification.load("location/International/ISO-CID/out/locations_international_iso_cid.csv")
+product_classification = classification.load("product/HS/Colombia_Prospedia/out/products_colombia_prospedia.csv")
+location_classification = classification.load("location/International/Mexico/out/locations_international_mexico.csv")
 
 
 def first(x):
@@ -70,7 +70,6 @@ hs92_4digit_country = {
         },
     },
     "digit_padding": {
-        "location": 6,
         "product": 4
     },
     "facet_fields": ["location", "product", "year"],
@@ -93,6 +92,46 @@ hs92_4digit_country = {
             "pci": first,
             "export_value": sum_group,
             "import_value": sum_group,
+        },
+    }
+}
+
+
+
+hs92_4digit_country_partner = {
+    "read_function": lambda: pd.read_stata(prefix_path("./H0_2015.dta")),
+    "field_mapping": {
+        "exporter": "location",
+        "importer": "partner",
+        "commoditycode": "product",
+        "year": "year",
+        "export_value": "export_value",
+        "import_value": "import_value",
+        #"value_exporter": "value_exporter",
+        #"case": "case",
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "country"
+        },
+        "partner": {
+            "classification": location_classification,
+            "level": "country"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+    },
+    "digit_padding": {
+        "product": 4
+    },
+    "facet_fields": ["location", "partner", "product", "year"],
+    "facets": {
+        ("location_id", "partner_id", "product_id", "year"): {
+            "export_value": first,
+            "import_value": first,
         },
     }
 }
@@ -130,7 +169,11 @@ if __name__ == "__main__":
     attrs = {
         "sql_table_name": "country_product_year",
         "location_level": "country",
-        "product_level": "4digit"
+        "product_level": "4digit",
+        "levels":{
+            "product": "4digit",
+            "location": "country"
+        },
     }
     store.get_storer("/country_product_year").attrs.atlas_metadata = attrs
 
@@ -154,6 +197,19 @@ if __name__ == "__main__":
         "product_level": "4digit",
     }
     store.get_storer("product_year").attrs.atlas_metadata = attrs
+
+    # Country Partner Product Year
+    cppy = dataset_tools.process_dataset(hs92_4digit_country_partner)
+    df = cppy[("location_id", "partner_id", "product_id", "year")].reset_index()
+
+    df.to_hdf(store, "country_partner_product_year", format="table")
+    attrs = {
+        "sql_table_name": "country_partner_product_year",
+        "location_level": "country",
+        "partner_level": "country",
+        "product_level": "4digit"
+    }
+    store.get_storer("/country_partner_product_year").attrs.atlas_metadata = attrs
 
     store.close()
 
