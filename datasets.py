@@ -133,6 +133,10 @@ hs92_4digit_country_partner = {
             "export_value": first,
             "import_value": first,
         },
+        ("location_id", "partner_id", "year"): {
+            "export_value": sum_group,
+            "import_value": sum_group,
+        },
     }
 }
 
@@ -209,11 +213,24 @@ if __name__ == "__main__":
     df.to_hdf(store, "country_partner_product_year", format="table")
     attrs = {
         "sql_table_name": "country_partner_product_year",
-        "location_level": "country",
-        "partner_level": "country",
-        "product_level": "4digit"
+        "levels":{
+            "product": "4digit",
+            "location": "country",
+            "partner": "country"
+        },
     }
     store.get_storer("/country_partner_product_year").attrs.atlas_metadata = attrs
+
+
+    df.to_hdf(store, "country_partner_year", format="table")
+    attrs = {
+        "sql_table_name": "country_partner_year",
+        "levels":{
+            "location": "country",
+            "partner": "country"
+        },
+    }
+    store.get_storer("/country_partner_year").attrs.atlas_metadata = attrs
 
     store.close()
 
