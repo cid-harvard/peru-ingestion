@@ -149,6 +149,11 @@ def process_dataset(dataset):
         df = merge_to_table(classification_table,
                             field_name + "_id",
                             df, field_name)
+        df[field_name + "_id"] = df[field_name + "_id"].astype("category", categories=classification_table.index.values)
+
+
+    if "year" in df.columns:
+        df["year"] = df["year"].astype("category", categories=df.year.unique())
 
     # Gather each facet dataset (e.g. DY, PY, DPY variables from DPY dataset)
     facet_outputs = {}
