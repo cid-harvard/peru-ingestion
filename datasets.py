@@ -184,7 +184,9 @@ if __name__ == "__main__":
     cy.to_hdf(store, "country_year", format="table")
     attrs = {
         "sql_table_name": "country_year",
-        "location_level": "country",
+        "levels":{
+            "location": "country"
+        },
     }
     store.get_storer("country_year").attrs.atlas_metadata = attrs
 
@@ -194,7 +196,9 @@ if __name__ == "__main__":
     py.to_hdf(store, "product_year", format="table")
     attrs = {
         "sql_table_name": "product_year",
-        "product_level": "4digit",
+        "levels":{
+            "product": "4digit",
+        },
     }
     store.get_storer("product_year").attrs.atlas_metadata = attrs
 
