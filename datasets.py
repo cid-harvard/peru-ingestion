@@ -222,6 +222,7 @@ if __name__ == "__main__":
     store.get_storer("/country_partner_product_year").attrs.atlas_metadata = attrs
 
 
+    df = cppy[("location_id", "partner_id", "year")].reset_index()
     df.to_hdf(store, "country_partner_year", format="table")
     attrs = {
         "sql_table_name": "country_partner_year",
